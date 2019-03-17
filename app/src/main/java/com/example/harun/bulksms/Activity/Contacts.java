@@ -84,9 +84,9 @@ public class Contacts extends AppCompatActivity {
                 }
 
                 if(choicedPersonNumbers.size() != 0){
-                    Toast.makeText(getApplicationContext(), "Kişiler Seçildi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Contacts have added to list", Toast.LENGTH_SHORT).show();
                 }else {
-                    Toast.makeText(getApplicationContext(),"Kişi seçilmedi!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"No one has been chosen!",Toast.LENGTH_SHORT).show();
                 }
 
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));

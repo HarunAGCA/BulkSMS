@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Mesaj gönder"));
-        tabLayout.addTab(tabLayout.newTab().setText("Gönderilen kişiler"));
+        tabLayout.addTab(tabLayout.newTab().setText("Send Meassage"));
+        tabLayout.addTab(tabLayout.newTab().setText("Delivered Persons"));
 
         tabLayout.setTabGravity(tabLayout.GRAVITY_FILL);
 
