@@ -23,8 +23,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.harun.bulksms.Activity.Contacts;
+import com.example.harun.bulksms.Activity.MainActivity;
 import com.example.harun.bulksms.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class FragmentMessage extends Fragment {
     FloatingActionButton addPerson;
 
     ArrayAdapter<String> arrayAdapter;
+
+    FragmentDeliveredPersons fragmentDeliveredPersons;
 
     Spinner spinner;
 
@@ -73,10 +77,10 @@ public class FragmentMessage extends Fragment {
 
         a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
 
-       // mContacts = new Contacts();
-
         arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
         spinner.setAdapter(arrayAdapter);
+
+        fragmentDeliveredPersons = new FragmentDeliveredPersons ();
 
         spinner.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -85,9 +89,6 @@ public class FragmentMessage extends Fragment {
                 return false;
             }
         });
-
-
-
 
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
@@ -187,10 +188,8 @@ public class FragmentMessage extends Fragment {
                     case Activity.RESULT_OK:
                         Toast.makeText(getActivity(), "SMS delivered",
                                 Toast.LENGTH_SHORT).show();
-
-
-
                         break;
+
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(getActivity(), "SMS not delivered",
                                 Toast.LENGTH_SHORT).show();
