@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,6 +26,7 @@ import com.example.harun.bulksms.Activity.Contacts;
 import com.example.harun.bulksms.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by HARUN on 24.04.2018.
@@ -45,9 +45,12 @@ public class FragmentMessage extends Fragment {
 
     Spinner spinner;
 
-    String message = "";
+    List<String> selectedPeopleNames;
+    List<String> selectedPeopleNumbers;
 
-    Contacts mContacts;
+    String message = "";
+    String [] a;
+
 
     @Nullable
     @Override
@@ -63,11 +66,14 @@ public class FragmentMessage extends Fragment {
 
         spinner = view.findViewById(R.id.spinnerChoosedPeople);
 
-        String [] a = new String[1];
-        a[0] = ""+mContacts.choicedPersonNames.size()+ " " + "People have selected. Touch long to see them.";
+        selectedPeopleNames = new ArrayList<>();
+        selectedPeopleNumbers = new ArrayList<>();
 
+        a = new String[1];
 
-        mContacts = new Contacts();
+        a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+
+       // mContacts = new Contacts();
 
         arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
         spinner.setAdapter(arrayAdapter);
@@ -75,10 +81,12 @@ public class FragmentMessage extends Fragment {
         spinner.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                buildDialog("Selected People", mContacts.choicedPersonNames.toArray(new CharSequence[mContacts.choicedPersonNames.size()]));
+                buildDialog("Selected People",selectedPeopleNames.toArray(new CharSequence[selectedPeopleNames.size()]));
                 return false;
             }
         });
+
+
 
 
 
@@ -89,21 +97,27 @@ public class FragmentMessage extends Fragment {
 
                     message = messageBox.getText().toString();
 
-                    if (mContacts.choicedPersonNumbers.size() != 0) {
+                    if (selectedPeopleNumbers.size() != 0) {
 
                         messageBox.setText("");
 
-                        for (int i = 0; i < mContacts.choicedPersonNumbers.size(); i++) {
-                            sendSMS(mContacts.choicedPersonNumbers.get(i), message);
+                        for (int i = 0; i < selectedPeopleNumbers.size(); i++) {
+                            sendSMS(selectedPeopleNumbers.get(i), message);
                         }
                     } else {
                         Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
                     }
 
-                    mContacts.choicedPersonNumbers.clear();
-                    mContacts.choicedPersonPositions.clear();
-
+                    Log.d("debug", "before"+selectedPeopleNames.size());
+                    Log.d("debug", "before"+selectedPeopleNumbers.size());
+                    selectedPeopleNames.clear();
+                    selectedPeopleNumbers.clear();
+                    a[0] = ""+selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
                     arrayAdapter.notifyDataSetChanged();
+                    Log.d("debug", "after"+selectedPeopleNames.size());
+                    Log.d("debug", "after"+selectedPeopleNumbers.size());
+
+
 
 
                 } catch (Exception e) {
@@ -117,7 +131,8 @@ public class FragmentMessage extends Fragment {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(getActivity(), Contacts.class));
+                startActivityForResult(new Intent(getActivity(), Contacts.class), 1);
+
 
             }
         });
@@ -207,6 +222,24 @@ public class FragmentMessage extends Fragment {
 
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1){
+            Log.d("debug", "requestCode = " + requestCode);
+            if (resultCode == Activity.RESULT_OK){
+                Log.d("debug", "result_ok");
+                selectedPeopleNames = (List<String>) data.getSerializableExtra("name");
+                selectedPeopleNumbers = (List<String>) data.getSerializableExtra("number");
+                a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+                arrayAdapter.notifyDataSetChanged();
+            }else {
+                Log.d("debug", "else");
+                selectedPeopleNames.clear();
+                selectedPeopleNumbers.clear();
+                a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+                arrayAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 }
 

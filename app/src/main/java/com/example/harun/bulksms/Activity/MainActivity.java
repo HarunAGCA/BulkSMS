@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
         tabLayout.addTab(tabLayout.newTab().setText("Send Meassage"));
-        tabLayout.addTab(tabLayout.newTab().setText("Delivered Persons"));
+        tabLayout.addTab(tabLayout.newTab().setText("Delivered People"));
 
         tabLayout.setTabGravity(tabLayout.GRAVITY_FILL);
 
