@@ -30,6 +30,7 @@ public class Contacts extends AppCompatActivity {
 
     public static List<Integer> choicedPersonPositions = new ArrayList<>();
     public static List<String> choicedPersonNumbers = new ArrayList<>();
+    public static List<String> choicedPersonNames = new ArrayList<>();
 
     List<Person> mContacts;
 
@@ -80,6 +81,8 @@ public class Contacts extends AppCompatActivity {
                 for (int i = 0; i < choicedPersonPositions.size(); i++) {
 
                     choicedPersonNumbers.add(mContacts.get(choicedPersonPositions.get(i)).getNumber());
+                    choicedPersonNames.add(mContacts.get(choicedPersonPositions.get(i)).getName());
+
 
                 }
 

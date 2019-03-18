@@ -4,20 +4,23 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.harun.bulksms.Activity.Contacts;
@@ -33,14 +36,16 @@ import java.util.ArrayList;
 
 public class FragmentMessage extends Fragment {
 
-    public EditText phoneNumberBox;
     public EditText messageBox;
 
     FloatingActionButton sendMessage;
     FloatingActionButton addPerson;
 
+    ArrayAdapter<String> arrayAdapter;
+
+    Spinner spinner;
+
     String message = "";
-    String phoneNumber = "";
 
     Contacts mContacts;
 
@@ -51,13 +56,30 @@ public class FragmentMessage extends Fragment {
         View view;
         view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        phoneNumberBox = view.findViewById(R.id.phone_number);
         messageBox = view.findViewById(R.id.message);
 
         sendMessage = view.findViewById(R.id.send_message);
         addPerson = view.findViewById(R.id.add_person);
 
+        spinner = view.findViewById(R.id.spinnerChoosedPeople);
+
+        String [] a = new String[1];
+        a[0] = ""+mContacts.choicedPersonNames.size()+ " " + "People have selected. Touch long to see them.";
+
+
         mContacts = new Contacts();
+
+        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
+        spinner.setAdapter(arrayAdapter);
+
+        spinner.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                buildDialog("Selected People", mContacts.choicedPersonNames.toArray(new CharSequence[mContacts.choicedPersonNames.size()]));
+                return false;
+            }
+        });
+
 
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
@@ -66,13 +88,10 @@ public class FragmentMessage extends Fragment {
                 try {
 
                     message = messageBox.getText().toString();
-                    phoneNumber = phoneNumberBox.getText().toString();
 
+                    if (mContacts.choicedPersonNumbers.size() != 0) {
 
-                    if (phoneNumber.length() != 0) {
-                        sendSMS(phoneNumber, message);
-                    }
-                    else if (mContacts.choicedPersonNumbers.size() != 0) {
+                        messageBox.setText("");
 
                         for (int i = 0; i < mContacts.choicedPersonNumbers.size(); i++) {
                             sendSMS(mContacts.choicedPersonNumbers.get(i), message);
@@ -83,6 +102,8 @@ public class FragmentMessage extends Fragment {
 
                     mContacts.choicedPersonNumbers.clear();
                     mContacts.choicedPersonPositions.clear();
+
+                    arrayAdapter.notifyDataSetChanged();
 
 
                 } catch (Exception e) {
@@ -167,6 +188,22 @@ public class FragmentMessage extends Fragment {
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
 
+
+    }
+
+    //-------------------------------- DIALOG BUILDING -----------------------------------------
+    private void buildDialog(String title, CharSequence[] choosedPeople) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(title);
+        builder.setNegativeButton("OK", null);
+        builder.setItems(choosedPeople, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
     }
 
