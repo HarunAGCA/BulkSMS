@@ -10,11 +10,13 @@ import com.example.harun.bulksms.Adapter.FragmentPageAdapter;
 import com.example.harun.bulksms.R;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     ViewPager viewPager;
     TabLayout tabLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
         tabLayout.addTab(tabLayout.newTab().setText("Send Meassage"));
-        tabLayout.addTab(tabLayout.newTab().setText("Delivered Persons"));
+        tabLayout.addTab(tabLayout.newTab().setText("Delivered People"));
 
         tabLayout.setTabGravity(tabLayout.GRAVITY_FILL);
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
 
     }
 }

@@ -5,65 +5,46 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <EditText
-        android:id="@+id/phone_number"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linear_layout_contacts"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/add_person"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="18dp"
-        android:layout_toLeftOf="@+id/add_person"
-        android:layout_toStartOf="@+id/add_person"
-        android:ems="10"
-        android:hint="Enter phone number here"
-        android:inputType="phone"
-        android:textSize="18dp" />
-
-    <EditText
-        android:id="@+id/message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/send_message"
-        android:layout_marginRight="18dp"
-        android:layout_toStartOf="@+id/send_message"
-        android:ems="10"
-        android:hint="Enter your message here"
-        android:inputType="textMultiLine" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/send_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:clickable="true"
-        app:backgroundTint="@android:color/holo_green_light"
-        app:fabSize="auto"
-        app:srcCompat="@android:drawable/ic_menu_send" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_person"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:weightSum="10">
 
-        app:backgroundTint="@android:color/holo_purple"
-        app:fabSize="auto"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        <Spinner
+            android:id="@+id/spinnerChoosedPeople"
+            android:layout_width="match_parent"
+            android:layout_height="@android:dimen/app_icon_size"
+            android:textAlignment="center"
+            android:layout_weight="9"
+            android:gravity="center_vertical" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_person"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            app:backgroundTint="@android:color/holo_purple"
+            app:fabSize="auto"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+    </LinearLayout>
+
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="363dp"
-        android:layout_alignParentStart="true"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linear_layout_contacts"
+        android:layout_above="@+id/linear_layout_message"
+        android:background="#E5E5E5"
         android:layout_centerVertical="true">
 
         <LinearLayout
@@ -71,6 +52,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:weightSum="10">
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="@android:dimen/app_icon_size"
+            android:background="@android:color/background_light"
+            android:layout_marginRight="18dp"
+            android:layout_weight="9"
+            android:hint="Enter your message here"
+            android:inputType="textMultiLine" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/send_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            app:backgroundTint="@android:color/holo_green_light"
+            app:fabSize="auto"
+            app:srcCompat="@android:drawable/ic_menu_send" />
+
+
+    </LinearLayout>
 
 
 </RelativeLayout>

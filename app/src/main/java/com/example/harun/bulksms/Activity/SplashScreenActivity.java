@@ -8,7 +8,7 @@ import com.example.harun.bulksms.R;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    private int SLEEP_TIME = 5000; // millisecond
+    private int SLEEP_TIME = 3000; // millisecond
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

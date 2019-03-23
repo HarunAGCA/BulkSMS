@@ -4,26 +4,31 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.harun.bulksms.Activity.Contacts;
+import com.example.harun.bulksms.Activity.MainActivity;
 import com.example.harun.bulksms.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by HARUN on 24.04.2018.
@@ -31,18 +36,24 @@ import java.util.ArrayList;
 
 
 
-public class FragmentMessage extends Fragment {
+public class FragmentMessage extends Fragment implements View.OnClickListener, View.OnLongClickListener{
 
-    public EditText phoneNumberBox;
-    public EditText messageBox;
+    List<String> selectedPeopleNames;
+    List<String> selectedPeopleNumbers;
+
+    String message = "";
+    String [] a;
+
+    EditText messageBox;
 
     FloatingActionButton sendMessage;
     FloatingActionButton addPerson;
 
-    String message = "";
-    String phoneNumber = "";
+    ArrayAdapter<String> arrayAdapter;
 
-    Contacts mContacts;
+    FragmentDeliveredPersons fragmentDeliveredPersons;
+
+    Spinner spinner;
 
     @Nullable
     @Override
@@ -51,59 +62,33 @@ public class FragmentMessage extends Fragment {
         View view;
         view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        phoneNumberBox = view.findViewById(R.id.phone_number);
         messageBox = view.findViewById(R.id.message);
 
         sendMessage = view.findViewById(R.id.send_message);
         addPerson = view.findViewById(R.id.add_person);
 
-        mContacts = new Contacts();
+        spinner = view.findViewById(R.id.spinnerChoosedPeople);
 
+        selectedPeopleNames = new ArrayList<>();
+        selectedPeopleNumbers = new ArrayList<>();
 
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
+        a = new String[1];
 
-                    message = messageBox.getText().toString();
-                    phoneNumber = phoneNumberBox.getText().toString();
+        a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
 
+        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
+        spinner.setAdapter(arrayAdapter);
 
-                    if (phoneNumber.length() != 0) {
-                        sendSMS(phoneNumber, message);
-                    }
-                    else if (mContacts.choicedPersonNumbers.size() != 0) {
+        fragmentDeliveredPersons = new FragmentDeliveredPersons ();
 
-                        for (int i = 0; i < mContacts.choicedPersonNumbers.size(); i++) {
-                            sendSMS(mContacts.choicedPersonNumbers.get(i), message);
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
-                    }
-
-                    mContacts.choicedPersonNumbers.clear();
-                    mContacts.choicedPersonPositions.clear();
-
-
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), e.toString() + "An unexcepted error has occoured!", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-
-        addPerson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                startActivity(new Intent(getActivity(), Contacts.class));
-
-            }
-        });
+        spinner.setOnLongClickListener(this);
+        sendMessage.setOnClickListener(this);
+        addPerson.setOnClickListener(this);
 
         return view;
     }
 
+    //---------------------------------- SMS SENDING -------------------------------------------
     public void sendSMS(final String phoneNumber, String message) {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -151,10 +136,8 @@ public class FragmentMessage extends Fragment {
                     case Activity.RESULT_OK:
                         Toast.makeText(getActivity(), "SMS delivered",
                                 Toast.LENGTH_SHORT).show();
-
-
-
                         break;
+
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(getActivity(), "SMS not delivered",
                                 Toast.LENGTH_SHORT).show();
@@ -170,6 +153,105 @@ public class FragmentMessage extends Fragment {
 
     }
 
+    //-------------------------------- DIALOG BUILDING -----------------------------------------
+    private void buildDialog(String title, CharSequence[] choosedPeople) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(title);
+        builder.setNegativeButton("OK", null);
+        builder.setItems(choosedPeople, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    //--------------------- GO TO CONTACTS ACTİVİTY FOR PEOPLE SELECTION -----------------------
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1){
+            Log.d("debug", "requestCode = " + requestCode);
+            if (resultCode == Activity.RESULT_OK){
+                Log.d("debug", "result_ok");
+                selectedPeopleNames = (List<String>) data.getSerializableExtra("name");
+                selectedPeopleNumbers = (List<String>) data.getSerializableExtra("number");
+                a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+                arrayAdapter.notifyDataSetChanged();
+            }else {
+                Log.d("debug", "else");
+                selectedPeopleNames.clear();
+                selectedPeopleNumbers.clear();
+                a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+                arrayAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    //----------------------------------- CLICK EVENTS -----------------------------------------
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+
+            case R.id.send_message:
+                try {
+
+                    message = messageBox.getText().toString();
+
+                    if (selectedPeopleNumbers.size() != 0) {
+
+                        messageBox.setText("");
+
+                        for (int i = 0; i < selectedPeopleNumbers.size(); i++) {
+                            sendSMS(selectedPeopleNumbers.get(i), message);
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
+                    }
+
+                    Log.d("debug", "before"+selectedPeopleNames.size());
+                    Log.d("debug", "before"+selectedPeopleNumbers.size());
+                    selectedPeopleNames.clear();
+                    selectedPeopleNumbers.clear();
+                    a[0] = ""+selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+                    arrayAdapter.notifyDataSetChanged();
+                    Log.d("debug", "after"+selectedPeopleNames.size());
+                    Log.d("debug", "after"+selectedPeopleNumbers.size());
+
+
+
+
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), e.toString() + "An unexcepted error has occoured!", Toast.LENGTH_LONG).show();
+                }
+                break;
+
+            case R.id.add_person:
+                startActivityForResult(new Intent(getActivity(), Contacts.class), 1);
+                break;
+
+            default:
+                break;
+
+        }
+
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        switch (view.getId()){
+            case R.id.spinnerChoosedPeople:
+                buildDialog("Selected People",selectedPeopleNames.toArray(new CharSequence[selectedPeopleNames.size()]));
+                break;
+                default:
+                    break;
+        }
+
+        return false;
+    }
 
 }
 

@@ -1,0 +1,35 @@
+[33mcommit 8453b908324ac5aa7677fb12b9f232784295f51c[m[33m ([m[1;36mHEAD -> [m[1;32mdevelop[m[33m)[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Sat Mar 23 16:21:12 2019 +0300
+
+    Added Message model.
+
+[33mcommit 2e88d45a8bf6e5fe8b02dfae73bd82bc82561f39[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Mon Mar 18 23:33:38 2019 +0300
+
+    The latest stabile version.
+
+[33mcommit 6de2273cbba884f2d92bf27a24ba801e3ac0c152[m[33m ([m[1;31morigin/develop[m[33m)[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Mon Mar 18 21:49:50 2019 +0300
+
+    Resolved discrepancy with UI  and selected people list.
+
+[33mcommit 541305cc825e0f1e3238183cf09beb49f33f77f1[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Mon Mar 18 09:30:55 2019 +0300
+
+    Message UI updated
+
+[33mcommit a3265ff0d3b284c207b2519f68f4b056f224af72[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Sun Mar 17 19:04:54 2019 +0300
+
+    the Lastest version that working correctly.
+
+[33mcommit e45acc15d38bb90ab51c385aea01e9cd0f44cd0c[m
+Author: Harun AĞCA <harun39117@gmail.com>
+Date:   Sun Mar 17 16:44:35 2019 +0300
+
+    Hint values have corrected.
