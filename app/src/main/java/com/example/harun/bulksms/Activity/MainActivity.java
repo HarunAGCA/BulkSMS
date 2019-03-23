@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.example.harun.bulksms.Adapter.FragmentPageAdapter;
+import com.example.harun.bulksms.Fragment.FragmentDeliveredPersons;
+import com.example.harun.bulksms.Fragment.FragmentMessage;
 import com.example.harun.bulksms.R;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     Toolbar toolbar;
     ViewPager viewPager;
@@ -42,4 +44,5 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 }
