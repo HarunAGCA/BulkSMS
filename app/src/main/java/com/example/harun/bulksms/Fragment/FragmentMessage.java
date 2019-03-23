@@ -18,20 +18,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.harun.bulksms.Activity.Contacts;
-import com.example.harun.bulksms.Model.Message;
+import com.example.harun.bulksms.Activity.MainActivity;
 import com.example.harun.bulksms.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by HARUN on 24.04.2018.
@@ -39,30 +36,24 @@ import java.util.Map;
 
 
 
-public class FragmentMessage extends Fragment implements View.OnClickListener, View.OnLongClickListener {
-
-    static Message message;
-
-    String [] a;
+public class FragmentMessage extends Fragment implements View.OnClickListener, View.OnLongClickListener{
 
     List<String> selectedPeopleNames;
     List<String> selectedPeopleNumbers;
-    List<String> sendedPeople;
-    List<String> deliveredPeople;
-    List<String> nonDeliveredPeople;
 
-    ArrayAdapter<String> arrayAdapterSpinner;
+    String message = "";
+    String [] a;
 
     EditText messageBox;
 
     FloatingActionButton sendMessage;
     FloatingActionButton addPerson;
-    Button button;
 
-    ListView lvMessage;
+    ArrayAdapter<String> arrayAdapter;
+
+    FragmentDeliveredPersons fragmentDeliveredPersons;
 
     Spinner spinner;
-
 
     @Nullable
     @Override
@@ -71,30 +62,24 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         View view;
         view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        message = new Message();
-
-        a = new String[1];
-
-        selectedPeopleNames = new ArrayList<>();
-        selectedPeopleNumbers = new ArrayList<>();
-        sendedPeople = new ArrayList<>();
-        deliveredPeople = new ArrayList<>();
-        nonDeliveredPeople = new ArrayList<>();
-
         messageBox = view.findViewById(R.id.message);
 
         sendMessage = view.findViewById(R.id.send_message);
         addPerson = view.findViewById(R.id.add_person);
-        button = view.findViewById(R.id.button);
-
-        lvMessage = view.findViewById(R.id.lvMessage);
 
         spinner = view.findViewById(R.id.spinnerChoosedPeople);
 
+        selectedPeopleNames = new ArrayList<>();
+        selectedPeopleNumbers = new ArrayList<>();
+
+        a = new String[1];
+
         a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
 
-        arrayAdapterSpinner = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
-        spinner.setAdapter(arrayAdapterSpinner);
+        arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
+        spinner.setAdapter(arrayAdapter);
+
+        fragmentDeliveredPersons = new FragmentDeliveredPersons ();
 
         spinner.setOnLongClickListener(this);
         sendMessage.setOnClickListener(this);
@@ -103,12 +88,12 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         return view;
     }
 
-    private void sendSMS(final String phoneNumber, final String message) {
-
+    //---------------------------------- SMS SENDING -------------------------------------------
+    public void sendSMS(final String phoneNumber, String message) {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
-        final PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
+        PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0,
                 new Intent(SENT), 0);
 
         PendingIntent deliveredPI = PendingIntent.getBroadcast(getActivity(), 0,
@@ -120,11 +105,8 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                        sendedPeople.add(phoneNumber);
-                        FragmentMessage.message.setSendedPeople(sendedPeople);
                         Toast.makeText(getActivity(), "SMS sent",
                                 Toast.LENGTH_SHORT).show();
-                        Log.d("debug", "sended : " +sendedPeople.size());
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                         Toast.makeText(getActivity(), "Generic failure",
@@ -152,19 +134,13 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
             public void onReceive(Context arg0, Intent arg1) {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                        deliveredPeople.add(phoneNumber);
-                        FragmentMessage.message.setDeliveredPeople(deliveredPeople);
                         Toast.makeText(getActivity(), "SMS delivered",
                                 Toast.LENGTH_SHORT).show();
-                        Log.d("debug", "delivered : " +deliveredPeople.size());
                         break;
 
                     case Activity.RESULT_CANCELED:
-                        nonDeliveredPeople.add(phoneNumber);
-                        FragmentMessage.message.setNonDeliveredPeople(nonDeliveredPeople);
                         Toast.makeText(getActivity(), "SMS not delivered",
                                 Toast.LENGTH_SHORT).show();
-                        Log.d("debug", "nonDelivered : " +nonDeliveredPeople.size());
                         break;
                 }
 
@@ -173,9 +149,6 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
-
-
-
 
 
     }
@@ -196,6 +169,7 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
     }
 
+    //--------------------- GO TO CONTACTS ACTİVİTY FOR PEOPLE SELECTION -----------------------
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1){
@@ -205,18 +179,18 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
                 selectedPeopleNames = (List<String>) data.getSerializableExtra("name");
                 selectedPeopleNumbers = (List<String>) data.getSerializableExtra("number");
                 a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
-                arrayAdapterSpinner.notifyDataSetChanged();
+                arrayAdapter.notifyDataSetChanged();
             }else {
                 Log.d("debug", "else");
                 selectedPeopleNames.clear();
                 selectedPeopleNumbers.clear();
                 a[0] = ""+ selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
-                arrayAdapterSpinner.notifyDataSetChanged();
+                arrayAdapter.notifyDataSetChanged();
             }
         }
-
     }
 
+    //----------------------------------- CLICK EVENTS -----------------------------------------
     @Override
     public void onClick(View view) {
 
@@ -225,14 +199,14 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
             case R.id.send_message:
                 try {
 
-                    message.setMessage(messageBox.getText().toString());
+                    message = messageBox.getText().toString();
 
                     if (selectedPeopleNumbers.size() != 0) {
 
                         messageBox.setText("");
 
                         for (int i = 0; i < selectedPeopleNumbers.size(); i++) {
-                            sendSMS(selectedPeopleNumbers.get(i), message.getMessage());
+                            sendSMS(selectedPeopleNumbers.get(i), message);
                         }
                     } else {
                         Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
@@ -243,7 +217,7 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
                     selectedPeopleNames.clear();
                     selectedPeopleNumbers.clear();
                     a[0] = ""+selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
-                    arrayAdapterSpinner.notifyDataSetChanged();
+                    arrayAdapter.notifyDataSetChanged();
                     Log.d("debug", "after"+selectedPeopleNames.size());
                     Log.d("debug", "after"+selectedPeopleNumbers.size());
 
@@ -268,18 +242,16 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
     @Override
     public boolean onLongClick(View view) {
-        switch (view.getId()) {
-
+        switch (view.getId()){
             case R.id.spinnerChoosedPeople:
                 buildDialog("Selected People",selectedPeopleNames.toArray(new CharSequence[selectedPeopleNames.size()]));
                 break;
-
-            default:
-                break;
-
+                default:
+                    break;
         }
 
         return false;
     }
+
 }
 

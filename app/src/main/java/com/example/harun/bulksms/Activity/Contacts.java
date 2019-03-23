@@ -106,8 +106,12 @@ public class Contacts extends AppCompatActivity {
                 setResult(Activity.RESULT_OK,returnIntent);
 
 
-                finish();
 
+                finish();
+/*
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
+                */
 
             }
         });
