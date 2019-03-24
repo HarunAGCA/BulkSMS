@@ -3,7 +3,6 @@ package com.example.harun.bulksms.Activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,20 +11,20 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.harun.bulksms.Adapter.ListViewCustomAdapter;
-import com.example.harun.bulksms.Model.Person;
-import com.example.harun.bulksms.R;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Contacts extends AppCompatActivity {
+import com.example.harun.bulksms.Adapter.ListViewCustomAdapter;
+import com.example.harun.bulksms.Model.Person;
+import com.example.harun.bulksms.R;
+
+
+public class Contacts extends AppCompatActivity implements View.OnClickListener{
 
     MainActivity mainActivity;
 
     ListView listView;
-
     FloatingActionButton saveButton;
 
     String name;
@@ -34,7 +33,6 @@ public class Contacts extends AppCompatActivity {
     public static List<Integer> choicedPersonPositions = new ArrayList<>();
     public static List<String> choicedPersonNumbers = new ArrayList<>();
     public static List<String> choicedPersonNames = new ArrayList<>();
-
     List<Person> mContacts;
 
 
@@ -42,13 +40,13 @@ public class Contacts extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        getSupportActionBar().setTitle("Contacts");
+
 
         listView = (ListView) findViewById(R.id.list_view);
-
         saveButton = (FloatingActionButton) findViewById(R.id.save_button);
 
-        final List<Person> mContacts = new ArrayList<>();
-
+        mContacts = new ArrayList<>();
         mainActivity = new MainActivity();
 
 
@@ -69,52 +67,7 @@ public class Contacts extends AppCompatActivity {
         choicedPersonPositions.clear();
 
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-
-
-                for (int i = 0; i < mContacts.size(); i++) {
-
-                    if (mContacts.get(i).isSelected()) {
-
-                        choicedPersonPositions.add(i);
-
-                    }
-
-                }
-
-                for (int i = 0; i < choicedPersonPositions.size(); i++) {
-
-                    choicedPersonNumbers.add(mContacts.get(choicedPersonPositions.get(i)).getNumber());
-                    choicedPersonNames.add(mContacts.get(choicedPersonPositions.get(i)).getName());
-
-
-                }
-
-                if(choicedPersonNumbers.size() != 0){
-                    Toast.makeText(getApplicationContext(), "Contacts have added to list", Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(getApplicationContext(),"No one has been chosen!",Toast.LENGTH_SHORT).show();
-                }
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("name", (Serializable) choicedPersonNames);
-                returnIntent.putExtra("number", (Serializable) choicedPersonNumbers);
-                setResult(Activity.RESULT_OK,returnIntent);
-
-
-
-                finish();
-/*
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finish();
-                */
-
-            }
-        });
+        saveButton.setOnClickListener(this);
 
         for(int i=0 ; i < mContacts.size() ; i++){
 
@@ -124,6 +77,62 @@ public class Contacts extends AppCompatActivity {
 
         listView.setAdapter(adapter);
 
+    }
+
+
+    //-------------------------------- SAVE BUTTON EVENTS ------------------------------------------
+    private void saveButtonEvent(){
+
+        for (int i = 0; i < mContacts.size(); i++) {
+
+            if (mContacts.get(i).isSelected()) {
+
+                choicedPersonPositions.add(i);
+
+            }
+
+        }
+
+        for (int i = 0; i < choicedPersonPositions.size(); i++) {
+
+            choicedPersonNumbers.add(mContacts.get(choicedPersonPositions.get(i)).getNumber());
+            choicedPersonNames.add(mContacts.get(choicedPersonPositions.get(i)).getName());
+
+
+        }
+
+        if(choicedPersonNumbers.size() != 0){
+            Toast.makeText(getApplicationContext(), "Contacts have added to list", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getApplicationContext(),"No one has been chosen!",Toast.LENGTH_SHORT).show();
+        }
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("name", (Serializable) choicedPersonNames);
+        returnIntent.putExtra("number", (Serializable) choicedPersonNumbers);
+        setResult(Activity.RESULT_OK,returnIntent);
+
+
+
+        finish();
+
+
+    }
+
+
+    //------------------------------------- CLICK EVENTS -------------------------------------------
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.save_button:
+                saveButtonEvent();
+                break;
+
+            default:
+
+                break;
+
+        }
     }
 
 

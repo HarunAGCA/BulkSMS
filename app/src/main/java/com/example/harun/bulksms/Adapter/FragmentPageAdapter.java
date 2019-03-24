@@ -7,10 +7,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.example.harun.bulksms.Fragment.FragmentDeliveredPersons;
 import com.example.harun.bulksms.Fragment.FragmentMessage;
 
-/**
- * Created by HARUN on 27.04.2018.
- */
-
 public class FragmentPageAdapter extends FragmentStatePagerAdapter {
 
     int tabCount;
