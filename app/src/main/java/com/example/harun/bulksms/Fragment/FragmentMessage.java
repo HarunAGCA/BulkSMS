@@ -22,38 +22,28 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.harun.bulksms.Activity.Contacts;
-import com.example.harun.bulksms.Activity.MainActivity;
-import com.example.harun.bulksms.R;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by HARUN on 24.04.2018.
- */
-
+import com.example.harun.bulksms.Activity.Contacts;
+import com.example.harun.bulksms.R;
 
 
 public class FragmentMessage extends Fragment implements View.OnClickListener, View.OnLongClickListener{
 
+    EditText messageBox;
+    FloatingActionButton sendMessage;
+    FloatingActionButton addPerson;
+    Spinner spinner;
+    FragmentDeliveredPersons fragmentDeliveredPersons;
+
     List<String> selectedPeopleNames;
     List<String> selectedPeopleNumbers;
+    ArrayAdapter<String> arrayAdapter;
 
     String message = "";
     String [] a;
 
-    EditText messageBox;
-
-    FloatingActionButton sendMessage;
-    FloatingActionButton addPerson;
-
-    ArrayAdapter<String> arrayAdapter;
-
-    FragmentDeliveredPersons fragmentDeliveredPersons;
-
-    Spinner spinner;
 
     @Nullable
     @Override
@@ -63,11 +53,11 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         view = inflater.inflate(R.layout.fragment_message, container, false);
 
         messageBox = view.findViewById(R.id.message);
-
         sendMessage = view.findViewById(R.id.send_message);
         addPerson = view.findViewById(R.id.add_person);
-
         spinner = view.findViewById(R.id.spinnerChoosedPeople);
+
+        fragmentDeliveredPersons = new FragmentDeliveredPersons ();
 
         selectedPeopleNames = new ArrayList<>();
         selectedPeopleNumbers = new ArrayList<>();
@@ -79,8 +69,6 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, a);
         spinner.setAdapter(arrayAdapter);
 
-        fragmentDeliveredPersons = new FragmentDeliveredPersons ();
-
         spinner.setOnLongClickListener(this);
         sendMessage.setOnClickListener(this);
         addPerson.setOnClickListener(this);
@@ -88,7 +76,7 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         return view;
     }
 
-    //---------------------------------- SMS SENDING -------------------------------------------
+    //------------------------------------ SMS SENDING ---------------------------------------------
     public void sendSMS(final String phoneNumber, String message) {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -153,7 +141,7 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
     }
 
-    //-------------------------------- DIALOG BUILDING -----------------------------------------
+    //---------------------------------- DIALOG BUILDING -------------------------------------------
     private void buildDialog(String title, CharSequence[] choosedPeople) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(title);
@@ -169,7 +157,43 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
     }
 
-    //--------------------- GO TO CONTACTS ACTİVİTY FOR PEOPLE SELECTION -----------------------
+    //---------------------------- SEND MESSAGE BUTTON EVENTS --------------------------------------
+    private void sendMessageButtonEvent(){
+        try {
+
+            message = messageBox.getText().toString();
+
+            if (selectedPeopleNumbers.size() != 0) {
+
+                messageBox.setText("");
+
+                for (int i = 0; i < selectedPeopleNumbers.size(); i++) {
+                    sendSMS(selectedPeopleNumbers.get(i), message);
+                }
+            } else {
+                Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
+            }
+
+            Log.d("debug", "before"+selectedPeopleNames.size());
+            Log.d("debug", "before"+selectedPeopleNumbers.size());
+            selectedPeopleNames.clear();
+            selectedPeopleNumbers.clear();
+            a[0] = ""+selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
+            arrayAdapter.notifyDataSetChanged();
+            Log.d("debug", "after"+selectedPeopleNames.size());
+            Log.d("debug", "after"+selectedPeopleNumbers.size());
+
+
+
+
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), e.toString() + "An unexcepted error has occoured!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+    //----------------------- GO TO CONTACTS ACTİVİTY FOR PEOPLE SELECTION -------------------------
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1){
@@ -190,43 +214,14 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
         }
     }
 
-    //----------------------------------- CLICK EVENTS -----------------------------------------
+    //------------------------------------- CLICK EVENTS -------------------------------------------
     @Override
     public void onClick(View view) {
 
         switch (view.getId()) {
 
             case R.id.send_message:
-                try {
-
-                    message = messageBox.getText().toString();
-
-                    if (selectedPeopleNumbers.size() != 0) {
-
-                        messageBox.setText("");
-
-                        for (int i = 0; i < selectedPeopleNumbers.size(); i++) {
-                            sendSMS(selectedPeopleNumbers.get(i), message);
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "Phone number can not empty!", Toast.LENGTH_LONG).show();
-                    }
-
-                    Log.d("debug", "before"+selectedPeopleNames.size());
-                    Log.d("debug", "before"+selectedPeopleNumbers.size());
-                    selectedPeopleNames.clear();
-                    selectedPeopleNumbers.clear();
-                    a[0] = ""+selectedPeopleNumbers.size()+ " " + "People selected. Touch long to see.";
-                    arrayAdapter.notifyDataSetChanged();
-                    Log.d("debug", "after"+selectedPeopleNames.size());
-                    Log.d("debug", "after"+selectedPeopleNumbers.size());
-
-
-
-
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), e.toString() + "An unexcepted error has occoured!", Toast.LENGTH_LONG).show();
-                }
+                    sendMessageButtonEvent();
                 break;
 
             case R.id.add_person:
@@ -252,6 +247,8 @@ public class FragmentMessage extends Fragment implements View.OnClickListener, V
 
         return false;
     }
+
+
 
 }
 

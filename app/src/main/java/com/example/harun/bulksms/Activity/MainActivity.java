@@ -10,7 +10,6 @@ import com.example.harun.bulksms.Adapter.FragmentPageAdapter;
 import com.example.harun.bulksms.R;
 
 
-
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;

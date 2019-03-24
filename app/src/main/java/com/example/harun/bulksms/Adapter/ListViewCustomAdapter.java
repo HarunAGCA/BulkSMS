@@ -17,13 +17,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Created by HARUN on 27.04.2018.
- */
 
 public class ListViewCustomAdapter extends BaseAdapter {
 
-    Context context;
     List<Person> personList;
     LayoutInflater mInflater;
 
@@ -51,14 +47,14 @@ public class ListViewCustomAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View satirView;
+        View rowView;
 
-        satirView = mInflater.inflate(R.layout.activity_row, null);
+        rowView = mInflater.inflate(R.layout.activity_row, null);
 
-        TextView name = satirView.findViewById(R.id.name);
-        TextView number = satirView.findViewById(R.id.number);
-        ImageView icon = satirView.findViewById(R.id.icon);
-        final CheckBox checkBox = satirView.findViewById(R.id.checkbox);
+        TextView name = rowView.findViewById(R.id.name);
+        TextView number = rowView.findViewById(R.id.number);
+        ImageView icon = rowView.findViewById(R.id.icon);
+        final CheckBox checkBox = rowView.findViewById(R.id.checkbox);
 
         name.setText(personList.get(position).getName());
         number.setText(personList.get(position).getNumber());
@@ -92,7 +88,7 @@ public class ListViewCustomAdapter extends BaseAdapter {
         });
 
 
-        return satirView;
+        return rowView;
     }
 
 

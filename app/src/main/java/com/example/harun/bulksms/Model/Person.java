@@ -1,11 +1,6 @@
 package com.example.harun.bulksms.Model;
 
-/**
- * Created by HARUN on 27.04.2018.
- */
-
 public class Person {
-
 
     String name;
     String number;
